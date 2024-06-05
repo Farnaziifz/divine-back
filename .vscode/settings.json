@@ -1,0 +1,15 @@
+{
+    "editor.formatOnSave": true,
+    "editor.defaultFormatter": "esbenp.prettier-vscode",
+    "[javascript]": {
+        "editor.defaultFormatter": "esbenp.prettier-vscode",
+        "editor.formatOnSave": true
+    },
+    "vetur.format.options.tabSize": 4,
+    "prettier.vueIndentScriptAndStyle": true,
+    "vetur.format.styleInitialIndent": true,
+    "vetur.format.scriptInitialIndent": true,
+    "prettier.useTabs": true,
+    "vetur.format.options.useTabs": true,
+    "html.format.indentInnerHtml": true
+}
