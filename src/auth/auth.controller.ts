@@ -1,26 +1,29 @@
-import { Controller, Request, Post, UseGuards } from '@nestjs/common';
+import { Controller, Post, Body, ConflictException } from '@nestjs/common';
 import { AuthService } from './auth.service';
-import { LocalAuthGuard } from './local-auth.guard';
-import { JwtAuthGuard } from './jwt-auth.guard';
+import { RegisterUserDto } from './register-user.dto';
+import { LoginUserDto } from './login-user.dto';
 
 @Controller('auth')
 export class AuthController {
-  constructor(private authService: AuthService) {}
-
-  @UseGuards(LocalAuthGuard)
-  @Post('login')
-  async login(@Request() req) {
-    return this.authService.login(req.user);
-  }
+  constructor(private readonly authService: AuthService) {}
 
   @Post('register')
-  async register(@Request() req) {
-    return this.authService.register(req.body);
+  async register(@Body() registerUserDto: RegisterUserDto) {
+    try {
+      return await this.authService.register(registerUserDto);
+    } catch (error) {
+      if (error instanceof ConflictException) {
+        return {
+          statusCode: 409,
+          message: 'User with this email already exists',
+        };
+      }
+      throw error;
+    }
   }
 
-  @UseGuards(JwtAuthGuard)
-  @Post('profile')
-  getProfile(@Request() req) {
-    return req.user;
+  @Post('login')
+  async login(@Body() loginUserDto: LoginUserDto) {
+    return this.authService.login(loginUserDto);
   }
 }
