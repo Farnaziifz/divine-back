@@ -14,6 +14,9 @@ export class User {
   @Column()
   email: string;
 
+  @Column()
+  orders: string;
+
   @Column({ default: true })
   isActive: boolean;
 }
