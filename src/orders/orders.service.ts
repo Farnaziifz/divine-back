@@ -22,9 +22,9 @@ export class OrderService {
   ) {}
 
   async create(createOrderDto: CreateOrderDto): Promise<Order> {
-    const user = await this.userRepository.findOne(
-      createOrderDto.userId as any,
-    );
+    const user = await this.userRepository.findOne({
+      where: { id: createOrderDto.userId },
+    });
     if (!user) {
       throw new NotFoundException(
         `User with ID ${createOrderDto.userId} not found`,
@@ -33,9 +33,9 @@ export class OrderService {
 
     const items = await Promise.all(
       createOrderDto.items.map(async (item) => {
-        const product = await this.productRepository.findOne(
-          item.productId as any,
-        );
+        const product = await this.productRepository.findOne({
+          where: { id: item.productId },
+        });
         if (!product) {
           throw new NotFoundException(
             `Product with ID ${item.productId} not found`,
@@ -46,7 +46,7 @@ export class OrderService {
           quantity: item.quantity,
           price: item.price,
         });
-        return orderItem;
+        return this.orderItemRepository.save(orderItem);
       }),
     );
 
@@ -60,28 +60,25 @@ export class OrderService {
     return this.orderRepository.save(order);
   }
 
-  findAll(): Promise<Order[]> {
+  async findAll(): Promise<Order[]> {
     return this.orderRepository.find({
-      relations: ['items', 'items.product', 'user'],
+      relations: ['user', 'items', 'items.product'],
     });
   }
 
   async findOne(id: number): Promise<Order> {
-    const order = await this.orderRepository.findOne({
+    return this.orderRepository.findOne({
       where: { id },
-      relations: ['items', 'items.product', 'user'],
+      relations: ['user', 'items', 'items.product'],
     });
-
-    if (!order) {
-      throw new NotFoundException(`Order with ID ${id} not found`);
-    }
-
-    return order;
   }
 
   async update(id: number, updateOrderDto: UpdateOrderDto): Promise<Order> {
     await this.orderRepository.update(id, updateOrderDto);
-    return this.orderRepository.findOne(id as any);
+    return this.orderRepository.findOne({
+      where: { id },
+      relations: ['user', 'items', 'items.product'],
+    });
   }
 
   async remove(id: number): Promise<void> {

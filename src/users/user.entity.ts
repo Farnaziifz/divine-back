@@ -1,4 +1,5 @@
-import { Entity, Column, PrimaryGeneratedColumn } from 'typeorm';
+import { Entity, Column, PrimaryGeneratedColumn, OneToMany } from 'typeorm';
+import { Order } from '../orders/entities/order.entity';
 
 @Entity()
 export class User {
@@ -14,8 +15,8 @@ export class User {
   @Column()
   email: string;
 
-  @Column()
-  orders: string;
+  @OneToMany(() => Order, (order) => order.user)
+  orders: Order[];
 
   @Column({ default: true })
   isActive: boolean;

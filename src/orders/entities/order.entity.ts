@@ -6,8 +6,8 @@ import {
   OneToMany,
 } from 'typeorm';
 import { User } from '../../users/user.entity';
-import { Product } from '../../products/entities/product.entity';
-
+// import { Product } from '../../products/entities/product.entity';
+import { OrderItem } from './order-item.entity';
 @Entity()
 export class Order {
   @PrimaryGeneratedColumn()
@@ -26,20 +26,20 @@ export class Order {
   totalPrice: number;
 }
 
-@Entity()
-export class OrderItem {
-  @PrimaryGeneratedColumn()
-  id: number;
+// @Entity()
+// export class OrderItem {
+//   @PrimaryGeneratedColumn()
+//   id: number;
 
-  @ManyToOne(() => Order, (order) => order.items)
-  order: Order;
+//   @ManyToOne(() => Order, (order) => order.items)
+//   order: Order;
 
-  @ManyToOne(() => Product)
-  product: Product;
+//   @ManyToOne(() => Product)
+//   product: Product;
 
-  @Column()
-  quantity: number;
+//   @Column()
+//   quantity: number;
 
-  @Column()
-  price: number;
-}
+//   @Column()
+//   price: number;
+// }

@@ -21,6 +21,7 @@ import { OrderItem } from './orders/entities/order-item.entity';
       database: 'divine_db',
       entities: [User, Product, Category, Tag, Order, OrderItem],
       synchronize: true,
+      // logging: true,
     }),
     AuthModule,
     UsersModule,
