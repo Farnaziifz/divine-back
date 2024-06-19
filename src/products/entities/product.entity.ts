@@ -2,14 +2,13 @@ import {
   Entity,
   PrimaryGeneratedColumn,
   Column,
+  ManyToOne,
   ManyToMany,
   JoinTable,
-  ManyToOne,
-  // OneToMany,
 } from 'typeorm';
-import { Category } from './category.entity';
-import { Tag } from './tag.entity';
-// import { OrderItem } from '../../orders/entities/order-item.entity';
+import { Category } from '../../category/category.entity';
+import { Tag } from '../../tags/entities/tag.entity';
+
 @Entity()
 export class Product {
   @PrimaryGeneratedColumn()
@@ -27,11 +26,7 @@ export class Product {
   @ManyToOne(() => Category, (category) => category.products)
   category: Category;
 
-  @ManyToMany(() => Tag)
+  @ManyToMany(() => Tag, (tag) => tag.products)
   @JoinTable()
   tags: Tag[];
-
-  // @OneToMany(() => OrderItem, (orderItem) => orderItem.product)
-  // orderItems: OrderItem[];
-  // Add more fields as needed
 }
