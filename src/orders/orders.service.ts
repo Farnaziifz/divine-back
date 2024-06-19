@@ -12,13 +12,13 @@ import { OrderItem } from './entities/order-item.entity';
 export class OrderService {
   constructor(
     @InjectRepository(Order)
-    private orderRepository: Repository<Order>,
+    private readonly orderRepository: Repository<Order>,
     @InjectRepository(User)
-    private userRepository: Repository<User>,
+    private readonly userRepository: Repository<User>,
     @InjectRepository(Product)
-    private productRepository: Repository<Product>,
+    private readonly productRepository: Repository<Product>,
     @InjectRepository(OrderItem)
-    private orderItemRepository: Repository<OrderItem>,
+    private readonly orderItemRepository: Repository<OrderItem>,
   ) {}
 
   async create(createOrderDto: CreateOrderDto): Promise<Order> {
@@ -41,12 +41,15 @@ export class OrderService {
             `Product with ID ${item.productId} not found`,
           );
         }
+
+        // Create an OrderItem entity
         const orderItem = this.orderItemRepository.create({
           product,
           quantity: item.quantity,
           price: item.price,
         });
-        return this.orderItemRepository.save(orderItem);
+
+        return orderItem;
       }),
     );
 
@@ -67,21 +70,25 @@ export class OrderService {
   }
 
   async findOne(id: number): Promise<Order> {
-    return this.orderRepository.findOne({
+    const order = await this.orderRepository.findOne({
       where: { id },
       relations: ['user', 'items', 'items.product'],
     });
+    if (!order) {
+      throw new NotFoundException(`Order with ID ${id} not found`);
+    }
+    return order;
   }
 
   async update(id: number, updateOrderDto: UpdateOrderDto): Promise<Order> {
     await this.orderRepository.update(id, updateOrderDto);
-    return this.orderRepository.findOne({
-      where: { id },
-      relations: ['user', 'items', 'items.product'],
-    });
+    return this.findOne(id);
   }
 
   async remove(id: number): Promise<void> {
-    await this.orderRepository.delete(id);
+    const result = await this.orderRepository.delete(id);
+    if (result.affected === 0) {
+      throw new NotFoundException(`Order with ID ${id} not found`);
+    }
   }
 }
